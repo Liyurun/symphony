@@ -1,0 +1,106 @@
+{
+  "name": "全链路创建新表",
+  "version": "1.0",
+  "definition": {
+    "name": "全链路创建新表",
+    "version": "1.0",
+    "description": "根据用户输入的新建表需求，完成从需求理解、表模型设计、DDL/SQL开发、数据测试到发布上线的全过程。优先通过adseek-hive-explorer分析上游表元数据、字段来源、分区和生产任务，通过adseek-dorado-devops辅助定位和验证Dorado任务。",
+    "input_requirements": "需要输入新表的业务背景、目标产出、目标库表名或命名诉求、字段口径、上游来源表、分区要求、刷新频率、TTL、负责人/业务联系人，可以是飞书文档链接。",
+    "output_requirements": "输出飞书总结文档，包括建表技术方案、目标DDL、核心SQL、上游依赖、测试报告、发布信息、回滚/风险说明和最终产物。",
+    "nodes": [
+      {
+        "id": "step-1",
+        "name": "需求理解与资产定位",
+        "description": "理解用户的新建表需求，明确业务背景、目标表用途、目标库表名、字段清单、字段口径、数据粒度、分区、刷新周期、TTL、负责人和业务联系人。通过adseek-hive-explorer读取上游表元数据、DDL、分区、血缘和生产任务，确认数据来源是否完整。",
+        "input_requirements": "用户需提供新表需求说明或飞书文档链接，至少包含业务目标、目标表用途、字段诉求和上游数据来源；如果目标表名、粒度、分区或字段口径不明确，需要列出阻塞问题。",
+        "output_requirements": "输出需求理解结论、目标表命名建议、字段与口径清单、上游资产定位结果、已确认信息、缺失信息、阻塞问题和待用户确认项。",
+        "skill": "",
+        "executor": "pi",
+        "depends_on": [],
+        "input_schema": {},
+        "output_schema": {},
+        "retry": {
+          "max_attempts": 3,
+          "backoff": "exponential",
+          "initial_delay": 1.0
+        },
+        "human_intervention": false,
+        "timeout": 300,
+        "parallel_group": null
+      },
+      {
+        "id": "step-2",
+        "name": "建表技术方案设计",
+        "description": "基于需求理解和上游资产信息，设计新表的数据模型、字段类型、字段英文注释、分区方案、TTL、产出链路、依赖关系和任务调度方案。生成完整技术方案，明确每个字段从哪个上游字段或计算逻辑得到。",
+        "input_requirements": "需要输入step-1产出的需求理解、字段口径、上游表DDL/元数据、上游任务信息和阻塞问题的确认结果。",
+        "output_requirements": "输出飞书技术方案文档，包括背景、目标表设计、字段级来源映射、数据粒度、分区/TTL、上游依赖、DAG说明、核心处理逻辑、风险点和待确认项。",
+        "skill": "",
+        "executor": "pi",
+        "depends_on": [
+          "step-1"
+        ],
+        "input_schema": {},
+        "output_schema": {},
+        "retry": {
+          "max_attempts": 3,
+          "backoff": "exponential",
+          "initial_delay": 1.0
+        },
+        "human_intervention": false,
+        "timeout": 300,
+        "parallel_group": null
+      },
+      {
+        "id": "step-3",
+        "name": "DDL SQL开发与测试",
+        "description": "根据技术方案生成目标表DDL、核心生产SQL、必要的配置文件和测试SQL。使用TQS或Dorado解析能力校验SQL语法，执行必要的数据预览、字段对齐、分区过滤、行数/空值/重复性/口径一致性测试，并输出测试结论。",
+        "input_requirements": "需要输入完整技术方案、字段来源映射、目标表DDL设计、上游表信息、调度分区参数和测试口径。",
+        "output_requirements": "输出完整目标表DDL、完整核心SQL、依赖配置建议、测试SQL、测试结果、异常说明、修复记录和可发布性判断。",
+        "skill": "",
+        "executor": "pi",
+        "depends_on": [
+          "step-2"
+        ],
+        "input_schema": {},
+        "output_schema": {},
+        "retry": {
+          "max_attempts": 3,
+          "backoff": "exponential",
+          "initial_delay": 1.0
+        },
+        "human_intervention": false,
+        "timeout": 300,
+        "parallel_group": null
+      },
+      {
+        "id": "step-4",
+        "name": "发布上线与交付",
+        "description": "基于DDL、SQL和测试报告准备发布计划，提交代码或任务变更，整理上线步骤、依赖配置、监控验收、回滚方案和交付文档。涉及创建表、提交代码、发布Dorado任务或变更线上调度前，必须等待用户明确确认。",
+        "input_requirements": "需要输入通过验证的DDL、SQL、测试报告、依赖配置、发布目标环境、负责人和审批确认信息。",
+        "output_requirements": "输出最终发布产物、上线步骤、发布/审批链接、测试报告、监控和验收标准、风险与回滚说明，以及飞书总结文档。",
+        "skill": "",
+        "executor": "pi",
+        "depends_on": [
+          "step-3"
+        ],
+        "input_schema": {},
+        "output_schema": {},
+        "retry": {
+          "max_attempts": 3,
+          "backoff": "exponential",
+          "initial_delay": 1.0
+        },
+        "human_intervention": true,
+        "timeout": 300,
+        "parallel_group": null
+      }
+    ],
+    "metadata": {
+      "domain": "adseek",
+      "scenario": "create_new_table",
+      "reference_sop": "全链路加字段"
+    }
+  },
+  "created_at": 1782988751.3978891,
+  "updated_at": 1782988751.3978891
+}

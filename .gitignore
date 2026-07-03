@@ -1,0 +1,54 @@
+# Symphony
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Data
+data/eventlog.db
+data/config.toml
+# Runtime data (per-task logs / state) — not source
+data/logs/
+data/tasks/
+data/symphony.log
+data/_tmp_fallback.toml
+demo_task_id.txt
+# pi-agent runtime data (not source)
+pi-agent/data/logs/
+pi-agent/data/tasks/
+**/symphony.log
+
+# Node / pi-agent build artifacts & deps (rebuilt by install.sh)
+node_modules/
+pi-agent/**/dist/
+pi-agent/**/node_modules/
+*.tsbuildinfo
+
+# Screenshots / transcripts (local artifacts)
+shot_*.png
+tui_transcript.txt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+.mypy_cache/

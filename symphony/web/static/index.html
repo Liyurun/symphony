@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symphony — SOP Orchestrator</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=20260704-interaction-v1">
+    <link rel="stylesheet" href="/static/css/components.css?v=20260704-interaction-v1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+</head>
+<body>
+    <div id="app">
+        <aside id="sidebar">
+            <div id="sidebar-header">
+                <h1 class="logo">🎵 Symphony</h1>
+                <span class="version">v0.1.0</span>
+            </div>
+            <nav id="sidebar-nav">
+                <a href="#/tasks" class="nav-item active" data-route="tasks">
+                    <span class="nav-icon">📋</span> Tasks
+                </a>
+                <a href="#/dashboard" class="nav-item" data-route="dashboard">
+                    <span class="nav-icon">📊</span> Dashboard
+                </a>
+                <a href="#/chat" class="nav-item" data-route="chat">
+                    <span class="nav-icon">💬</span> Q&A
+                </a>
+                <a href="#/sop" class="nav-item" data-route="sop">
+                    <span class="nav-icon">🔧</span> SOP Templates
+                </a>
+                <a href="#/logs" class="nav-item" data-route="logs">
+                    <span class="nav-icon">📜</span> Logs
+                </a>
+                <a href="#/settings" class="nav-item" data-route="settings">
+                    <span class="nav-icon">⚙️</span> Settings
+                </a>
+            </nav>
+            <div id="sidebar-tasks">
+                <div class="tasks-header">
+                    <h3>Active Tasks</h3>
+                    <button id="btn-new-task" class="btn btn-sm btn-primary" title="New Task">+ New</button>
+                </div>
+                <div id="task-list">
+                    <div class="empty-state">No tasks yet</div>
+                </div>
+            </div>
+            <div id="sidebar-footer">
+                <div class="connection-status" id="connection-status">
+                    <span class="status-dot disconnected"></span>
+                    <span class="status-text">Disconnected</span>
+                </div>
+            </div>
+        </aside>
+        <main id="main-content">
+            <!-- Content rendered by router -->
+        </main>
+    </div>
+
+    <!-- New Task Modal -->
+    <div id="modal-new-task" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Task</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="form-help">
+                    Ask a question directly for a quick single-turn task, or pick a
+                    SOP template to run a multi-step workflow. At least one is required.
+                </p>
+                <div class="form-group">
+                    <label for="new-task-prompt">Your question / task input</label>
+                    <textarea id="new-task-prompt" class="form-textarea" rows="4"
+                              placeholder="e.g. Review the security of src/auth.py — or leave empty and pick a SOP template below."></textarea>
+                    <small class="form-hint">Leave the SOP empty to run this as a one-node Q&amp;A task (方案A). The task starts automatically.</small>
+                </div>
+                <div class="form-group">
+                    <label for="new-task-sop">SOP Template (optional)</label>
+                    <select id="new-task-sop" class="form-select">
+                        <option value="">— None (ad-hoc question) —</option>
+                    </select>
+                    <small class="form-hint">When selected, your input above seeds the first node.</small>
+                </div>
+                <div class="form-group">
+                    <label for="new-task-version">Version</label>
+                    <input type="text" id="new-task-version" class="form-input" value="1.0">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-cancel">Cancel</button>
+                <button class="btn btn-primary" id="btn-create-task">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Human Approval Modal -->
+    <div id="modal-human-approval" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚠️ Human Approval Required</h2>
+            </div>
+            <div class="modal-body">
+                <div id="approval-node-name" class="approval-node"></div>
+                <div id="approval-result" class="approval-result"></div>
+                <div class="form-group">
+                    <label for="approval-feedback">Feedback</label>
+                    <textarea id="approval-feedback" class="form-textarea" rows="3"
+                              placeholder="Optional feedback..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btn-reject">✗ Reject</button>
+                <button class="btn btn-success" id="btn-approve">✓ Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/static/js/app.js?v=20260704-interaction-v1"></script>
+</body>
+</html>
