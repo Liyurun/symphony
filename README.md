@@ -1,36 +1,112 @@
-# Symphony — SOP-Based Multi-Agent Task Orchestrator
+<p align="center">
+  <h1 align="center">Symphony</h1>
+  <p align="center">
+    SOP-based multi-agent task orchestration for pi agent, with native TUI, Web dashboard, file-backed logs, and human-in-the-loop workflows.
+  </p>
+</p>
 
-Symphony adds SOP (Standard Operating Procedure) workflow orchestration on top of pi agent.
+<p align="center">
+  <a href="https://github.com/Liyurun/symphony/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/Liyurun/symphony?style=social"></a>
+  <a href="https://github.com/Liyurun/symphony/network/members"><img alt="GitHub forks" src="https://img.shields.io/github/forks/Liyurun/symphony?style=social"></a>
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white">
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-Web%20UI-009688?logo=fastapi&logoColor=white">
+  <a href="https://github.com/Liyurun/symphony/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/Liyurun/symphony"></a>
+  <a href="https://github.com/Liyurun/symphony/blob/main/pyproject.toml"><img alt="License" src="https://img.shields.io/badge/License-MIT-green"></a>
+</p>
 
-## Quick Start（一键安装）
+<p align="center">
+  <a href="#quick-start">Quick Start</a>
+  ·
+  <a href="#screenshots">Screenshots</a>
+  ·
+  <a href="#architecture">Architecture</a>
+  ·
+  <a href="#configuration">Configuration</a>
+  ·
+  <a href="#star-history">Star History</a>
+</p>
 
-在解压后的 `symphony-final` 目录里执行：
+---
+
+## Why Symphony
+
+Symphony adds SOP (Standard Operating Procedure) workflow orchestration on top of pi agent. It turns a prompt into a traceable task, runs each SOP node through the agent runtime, and keeps TUI and Web views backed by the same local event log.
+
+| Capability | What it gives you |
+| --- | --- |
+| SOP orchestration | Define repeatable multi-step workflows with node-level execution records. |
+| Native TUI | Keep the pi-style terminal experience and add Symphony commands like `/sop`. |
+| Web dashboard | Inspect tasks, node outputs, SOP templates, logs, and settings in a browser. |
+| Human-in-the-loop | Pause workflows for approval or manual input before continuing. |
+| Redo and retry | Re-run failed or stale nodes and cascade downstream execution. |
+| File-backed storage | Store JSONL event streams and JSON task metadata without SQLite. |
+
+## Screenshots
+
+### Web Task Detail
+
+![Web task detail](docs/images/web-task-detail.png)
+
+### Native TUI
+
+![Native TUI SOP run](docs/images/tui-sop-run.png)
+
+### File-Backed Logs
+
+![File-backed logs](docs/images/file-backed-logs.png)
+
+## Quick Start
+
+Run this from the project root:
 
 ```bash
 bash install.sh
 ```
 
-脚本会自动：检测/安装 uv → 构建 pi（`dist/cli.js`，rpc 模式所需）→ `uv tool install --editable .`
-把 `symphony` 命令装进 PATH。之后在任意位置直接输入：
+The installer detects or installs `uv`, builds pi for RPC mode, and runs `uv tool install --editable .`.
+
+Start Symphony from anywhere:
 
 ```bash
 symphony
 ```
 
-即可启动（TUI + Web）。开箱即用——`data/config.toml` 已内置火山引擎（Volcengine Ark）
-provider，无需再传任何 `--provider-*` 参数。
+Then open the Web dashboard:
 
-Symphony 会自动将 provider 配置写入 `~/.pi/agent/settings.json`。
+```text
+http://localhost:8080
+```
 
-## 配置
+## Architecture
 
-### 方式 1：命令行参数（一次性）
+```mermaid
+flowchart LR
+    User[User] --> TUI[Native TUI]
+    User --> Web[Web Dashboard]
+    TUI --> CLI[Symphony CLI]
+    Web --> API[FastAPI Routes]
+    CLI --> Engine[SOP Engine]
+    API --> Engine
+    Engine --> PiBridge[Pi Bridge]
+    PiBridge --> PiAgent[pi-agent Runtime]
+    Engine --> EventLog[JSONL Event Log]
+    Engine --> TaskStore[JSON Task Metadata]
+    EventLog --> Web
+    TaskStore --> Web
+```
+
+Symphony keeps runtime state in local files. Events are appended to `data/logs/<task_id>.jsonl`, task metadata is stored in `data/tasks/<task_id>.json`, and both TUI and Web read from the same source of truth.
+
+## Configuration
+
+### Command Flags
 
 ```bash
 symphony --provider-url https://ark.cn-beijing.volces.com/api/v3 --provider-key sk-xxx --provider-model doubao-1.5-pro-32k
 ```
 
-### 方式 2：环境变量（推荐）
+### Environment Variables
 
 ```bash
 export SYMPHONY_PROVIDER_URL=https://ark.cn-beijing.volces.com/api/v3
@@ -39,9 +115,9 @@ export SYMPHONY_PROVIDER_MODEL=doubao-1.5-pro-32k
 symphony
 ```
 
-### 方式 3：配置文件 `data/config.toml`
+### Config File
 
-Symphony 首次启动会自动创建 `data/config.toml`。也可以手动编辑：
+Symphony creates `data/config.toml` on first launch. You can also copy from `data/config.toml.example`.
 
 ```toml
 [provider]
@@ -67,117 +143,85 @@ max_log_entries = 1000
 [tui]
 theme = "textual-dark"
 compact_view = false
-# 是否把正常会话（非 SOP 的 pi 原生对话）也记录为任务写入本地日志，
-# 便于日后在 Web 端查看与分析。默认开启。
 log_normal_chat = true
 ```
 
-| 字段 | 说明 | 默认值 |
-|------|------|--------|
-| `provider.base_url` | OpenAI 兼容 API 地址 | - |
-| `provider.api_key` | API Key | - |
-| `provider.model` | 模型 ID | `doubao-1.5-pro-32k` |
-| `provider.max_tokens` | 最大输出 token | `4096` |
-| `provider.temperature` | 温度 | `0.7` |
-| `pi_agent.binary_path` | pi 可执行文件路径 | 自动检测 |
-| `pi_agent.thinking_level` | 思考深度 | `medium` |
-| `web_ui.port` | Web 端口 | `8080` |
-| `web_ui.theme` | 主题 | `dark` |
+| Field | Description | Default |
+| --- | --- | --- |
+| `provider.base_url` | OpenAI-compatible API endpoint | - |
+| `provider.api_key` | Provider API key | - |
+| `provider.model` | Model ID | `doubao-1.5-pro-32k` |
+| `provider.max_tokens` | Maximum output tokens | `4096` |
+| `provider.temperature` | Sampling temperature | `0.7` |
+| `pi_agent.binary_path` | pi executable path | auto-detected |
+| `pi_agent.thinking_level` | Agent thinking depth | `medium` |
+| `web_ui.port` | Web dashboard port | `8080` |
+| `web_ui.theme` | Web dashboard theme | `dark` |
 
-### 方式 4：pi 的 settings.json（高级）
+### pi `settings.json`
 
-如果已配置过 pi 的内置 provider（如 Anthropic/OpenAI），直接在 `~/.pi/settings.json` 中配置：
-
-```json
-{
-  "providers": {
-    "doubao": {
-      "baseUrl": "https://ark.cn-beijing.volces.com/api/v3",
-      "apiKey": "sk-xxx",
-      "models": [
-        {
-          "id": "doubao-1.5-pro-32k",
-          "name": "Doubao Pro 32K",
-          "reasoning": true,
-          "input": ["text"],
-          "cost": {"input": 1, "output": 2, "cacheRead": 0.25, "cacheWrite": 4},
-          "contextWindow": 32768,
-          "maxTokens": 4096
-        }
-      ]
-    }
-  }
-}
-```
-
-然后用：
+If pi already has a provider configured, point Symphony to that model directly:
 
 ```bash
 symphony --pi-model doubao/doubao-1.5-pro-32k
 ```
 
-## 项目结构
-
-```
-symphony/
-├── pyproject.toml        # Python 项目（uv 管理）
-├── install.sh            # 一键安装脚本
-├── data/
-│   ├── config.toml       #   配置（已内置火山引擎 provider）
-│   ├── logs/*.jsonl      #   事件日志（每个任务一个 JSONL，单一事实来源）
-│   ├── tasks/*.json      #   任务元数据（每个任务一个 JSON）
-│   └── sop_templates/    #   SOP 模板
-├── symphony/             # Python 后端
-│   ├── cli.py            #   入口（自动配置 provider）
-│   ├── config/           #   配置模块（config.toml）
-│   ├── core/             #   EventBus, EventLog（文件日志）, PiBridge, TaskManager
-│   ├── sop/              #   SOP 定义、执行器、重试、人工介入
-│   ├── tui/              #   原生 pi TUI（native_tui.py：pi 原生对话 + /sop）
-│   └── web/              #   Web 服务器 + SPA 前端
-├── pi-agent/             # pi 源码
-└── tests/                # Python 测试（124 个）
-```
-
-> 存储说明：Symphony 已完全移除 SQLite，改用**本地追加式日志**。事件写入
-> `data/logs/<task_id>.jsonl`，任务元数据写入 `data/tasks/<task_id>.json`。
-> TUI 与 Web 共享同一份本地日志（单一事实来源），无需 WebSocket 同步。
-
 ## Web UI
 
-打开 `http://localhost:8080`：
+Open `http://localhost:8080` after starting Symphony.
 
-| Hash | 页面 |
-|------|------|
-| `#/tasks` | 任务列表 |
-| `#/tasks/:id` | 任务详情（节点图 + 实时输出 + 人工审批 + 节点级「打断并重来」） |
-| `#/sop` | SOP 模板编辑 |
-| `#/logs` | 事件日志查看 |
-| `#/settings` | 配置编辑 |
+| Route | Page |
+| --- | --- |
+| `#/tasks` | Task list |
+| `#/tasks/:id` | Task detail with node outputs, approvals, and redo controls |
+| `#/sop` | SOP template editor |
+| `#/logs` | Event log viewer |
+| `#/settings` | Runtime settings |
 
-### 关键交互能力
+## TUI Commands
 
-- **一切皆任务（方案A）**：「新建任务」里可只填一个问题（不选 SOP）直接创建并自动开跑，
-  合成为单节点 Q&A 任务；任务详情页底部输入框继续追问即为多轮对话（追加依赖上一轮的新节点）。
-- **节点级「打断并重来」**：任务详情页每个节点卡片上的 `↻ Redo` 按钮可中断并整节点重跑，
-  下游节点自动级联重跑。
+| Input | Action |
+| --- | --- |
+| `<plain text>` | Chat with the native pi agent and optionally write the session into local logs. |
+| `/sop <name> [k=v ...] [natural language]` | Run an SOP from the terminal and inspect it in Web UI. |
+| `/sops` | List available SOP templates. |
+| `/tasks` | List recent tasks. |
+| `/help` | Show help. |
+| `/quit` | Exit. |
 
-## TUI（原生 pi + /sop）
+## Project Structure
 
-TUI 是 pi 原生 agent 的交互终端，外加一个 Symphony 专属斜杠命令 `/sop`：
+```text
+symphony/
+├── pyproject.toml
+├── install.sh
+├── data/
+│   ├── config.toml.example
+│   └── sop_templates/
+├── docs/images/
+├── symphony/
+│   ├── cli.py
+│   ├── config/
+│   ├── core/
+│   ├── sop/
+│   ├── tui/
+│   └── web/
+├── pi-agent/
+└── tests/
+```
 
-| 输入 | 作用 |
-|------|------|
-| `<直接输入>` | 与 pi 原生对话（正常会话）。默认也会写入本地日志（`log_normal_chat = true`），便于日后在 Web 端分析 |
-| `/sop <name> [k=v ...] [自然语言]` | 在后端运行一条 SOP，Web 端可看到全部节点记录 |
-| `/sops` | 列出可用 SOP 模板 |
-| `/tasks` | 列出最近任务 |
-| `/help` | 帮助 |
-| `/quit` | 退出 |
-
-TUI 从 TUI 发起的 SOP 在后端执行并写入共享日志，因此 Web 看板可完整看到每个节点的进度与输出。
-
-## 测试
+## Testing
 
 ```bash
-uv run pytest tests/ -v      # 或：python3 -m pytest tests/ -q
+uv run pytest tests/ -v
 ```
+
+Or:
+
+```bash
+python3 -m pytest tests/ -q
+```
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Liyurun/symphony&type=Date)](https://www.star-history.com/#Liyurun/symphony&Date)
