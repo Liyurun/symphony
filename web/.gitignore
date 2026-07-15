@@ -1,0 +1,17 @@
+# 前端依赖与构建产物
+node_modules/
+dist/
+
+# TypeScript 增量构建缓存与 vite.config 编译产物
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+# 本地环境与日志
+*.local
+*.log
+
+# 编辑器
+.vscode/*
+!.vscode/extensions.json
+.idea

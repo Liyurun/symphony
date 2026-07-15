@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 深色主题基础样式 */
+:root { color-scheme: dark; }
+body {
+  margin: 0;
+  background-color: #0f172a; /* slate-900 */
+  color: #e2e8f0; /* slate-200 */
+  font-family: system-ui, -apple-system, sans-serif;
+}

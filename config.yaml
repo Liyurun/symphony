@@ -1,0 +1,155 @@
+# English: LLM provider and generation defaults.
+# 中文：大模型服务提供方与生成参数默认值。
+llm:
+  # English: Provider name used by Symphony, currently doubao/Ark-compatible.
+  # 中文：Symphony 使用的大模型提供方名称，当前为 doubao/火山方舟兼容模式。
+  provider: doubao
+  # English: API key for the LLM provider; environment variables are supported.
+  # 中文：大模型服务 API Key，支持使用环境变量占位符。
+  api_key: ${ARK_API_KEY}
+  # English: Model or Ark endpoint ID used for requests.
+  # 中文：请求使用的模型名称或火山方舟 endpoint ID。
+  model: ${ARK_MODEL_ID}
+  # English: Base URL for the LLM provider API.
+  # 中文：大模型服务 API 的基础地址。
+  base_url: https://ark.cn-beijing.volces.com/api/v3
+  # English: Sampling temperature; higher values make output more random.
+  # 中文：采样温度，数值越高输出越随机。
+  temperature: 0.7
+  # English: Maximum tokens to generate in one LLM response.
+  # 中文：单次大模型响应允许生成的最大 token 数。
+  max_tokens: 4096
+  # English: HTTP request timeout for LLM calls, in seconds.
+  # 中文：大模型 HTTP 请求超时时间，单位为秒。
+  timeout_seconds: 120.0
+
+# English: Local FastAPI server startup defaults.
+# 中文：本地 FastAPI 服务启动默认值。
+server:
+  # English: Host address the server binds to.
+  # 中文：服务监听的主机地址。
+  host: 127.0.0.1
+  # English: Preferred server port; CLI may auto-increment if occupied.
+  # 中文：服务优先监听端口；如被占用，CLI 可自动向后探测。
+  port: 8899
+  # English: Whether to open the browser automatically after server startup.
+  # 中文：服务启动后是否自动打开浏览器。
+  auto_open_browser: true
+  # English: Maximum number of ports to scan when the preferred port is occupied.
+  # 中文：首选端口被占用时最多向后探测的端口数量。
+  port_scan_max_attempts: 100
+  # English: Maximum time to wait for the background server to become ready, in seconds.
+  # 中文：等待后台服务端口就绪的最长时间，单位为秒。
+  startup_wait_timeout_seconds: 5.0
+
+# English: Local filesystem paths for runtime data and user assets.
+# 中文：运行时数据与用户资产的本地文件系统路径。
+storage:
+  # English: Directory for workflow workspaces and task runtime artifacts.
+  # 中文：工作流工作区与任务运行产物目录。
+  workspace_dir: ~/.symphony/workspaces
+  # English: Directory for unified session logs and conversation records.
+  # 中文：统一会话日志与对话记录目录。
+  sessions_dir: ~/.symphony/sessions
+  # English: Directory for SOP template files.
+  # 中文：SOP 模板文件目录。
+  templates_dir: ~/.symphony/templates
+  # English: Directory for user-defined custom skills.
+  # 中文：用户自定义技能目录。
+  custom_skills_dir: ~/.symphony/skills
+
+# English: Chat, SOP agent, and context compression runtime limits.
+# 中文：Chat、SOP Agent 与上下文压缩的运行时限制。
+runtime:
+  # English: Defaults for Chat ReAct runtime.
+  # 中文：Chat ReAct 运行时默认值。
+  chat:
+    # English: Maximum Chat ReAct loop iterations per user request.
+    # 中文：每次用户请求允许的 Chat ReAct 最大循环轮数。
+    max_iterations: 999
+    # English: Maximum number of external skill references injected into Chat context.
+    # 中文：注入 Chat 上下文的外部技能参考数量上限。
+    skill_reference_limit: 999
+  # English: Defaults for SOP agent node execution.
+  # 中文：SOP Agent 节点执行默认值。
+  agent:
+    # English: Maximum Agent ReAct loop iterations for one SOP node.
+    # 中文：单个 SOP 节点允许的 Agent ReAct 最大循环轮数。
+    max_iterations: 20
+    # English: Maximum retry count after JSON parsing or schema validation failure.
+    # 中文：JSON 解析或 schema 校验失败后的最大重试次数。
+    max_retries: 3
+  # English: Context compression settings before messages are sent to the LLM.
+  # 中文：消息发送给大模型前的上下文压缩设置。
+  context_compression:
+    # English: Whether to enable context compression.
+    # 中文：是否启用上下文压缩。
+    enabled: true
+    # English: Soft limit for total prompt characters sent to the LLM.
+    # 中文：发送给大模型的 prompt 总字符数软上限。
+    max_prompt_chars: 120000
+    # English: Preferred number of recent messages to preserve during compression.
+    # 中文：压缩时优先保留的最近消息数量。
+    keep_recent_messages: 24
+    # English: Minimum number of recent messages to preserve during compression.
+    # 中文：压缩时至少保留的最近消息数量。
+    min_recent_messages: 6
+    # English: Maximum character count for older context summaries.
+    # 中文：较早上下文摘要的最大字符数。
+    summary_max_chars: 4000
+    # English: Maximum character count for a single message before model injection.
+    # 中文：单条消息注入模型上下文前的最大字符数。
+    max_message_chars: 16000
+
+# English: Default arguments for built-in skills; per-call arguments take priority.
+# 中文：内置技能默认参数；单次工具调用参数优先级更高。
+skills:
+  # English: Defaults for the http_request skill.
+  # 中文：http_request 技能默认参数。
+  http_request:
+    # English: Default HTTP request timeout for the skill, in seconds.
+    # 中文：该技能默认 HTTP 请求超时时间，单位为秒。
+    timeout_seconds: 30.0
+  # English: Defaults for the external skill reference search API.
+  # 中文：外部 Skill 参考资料查询 API 的默认参数。
+  skill_references:
+    # English: Default result limit when /api/skills/references omits limit.
+    # 中文：/api/skills/references 未传 limit 时的默认返回数量。
+    default_limit: 20
+    # English: Maximum result limit allowed by /api/skills/references.
+    # 中文：/api/skills/references 允许的最大返回数量。
+    max_limit: 50
+  # English: Defaults for workspace-related skills.
+  # 中文：工作区相关技能默认参数。
+  workspace:
+    # English: Default timeout for bash_execute commands, in seconds.
+    # 中文：bash_execute 命令默认超时时间，单位为秒。
+    bash_timeout_seconds: 30
+    # English: Default maximum stdout/stderr characters returned by bash_execute.
+    # 中文：bash_execute 默认返回的 stdout/stderr 最大字符数。
+    max_output_chars: 12000
+    # English: Default maximum number of entries returned by workspace_list_files.
+    # 中文：workspace_list_files 默认返回的条目数量上限。
+    list_files_max_results: 200
+    # English: Default maximum number of matches returned by workspace_search.
+    # 中文：workspace_search 默认返回的匹配数量上限。
+    search_max_results: 80
+  # English: Defaults for the python_execute skill.
+  # 中文：python_execute 技能默认参数。
+  python_execute:
+    # English: Default Python execution timeout, in seconds.
+    # 中文：Python 代码默认执行超时时间，单位为秒。
+    timeout_seconds: 30
+
+# English: Defaults for local/TUI client HTTP calls.
+# 中文：本地/TUI 客户端 HTTP 调用默认值。
+client:
+  # English: HTTP request timeout used by the local client, in seconds.
+  # 中文：本地客户端 HTTP 请求超时时间，单位为秒。
+  http_timeout_seconds: 30.0
+  # English: Maximum number of submitted input entries retained by the TUI.
+  # 中文：TUI 输入框保留的已提交历史条数上限。
+  tui_input_history_limit: 100
+  # English: Maximum number of chat history messages sent as WebSocket context.
+  # 中文：作为 WebSocket Chat 上下文发送的历史消息数量上限。
+  chat_context_history_limit: 24

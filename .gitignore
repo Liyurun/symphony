@@ -1,54 +1,37 @@
-# Symphony
+# Python 编译缓存
 __pycache__/
-*.py[cod]
-*.egg-info/
-dist/
-build/
-.eggs/
+*.pyc
 
-# Virtual environment
+# 虚拟环境
 .venv/
-venv/
 env/
 
-# Data
-data/eventlog.db
-data/config.toml
-# Runtime data (per-task logs / state) — not source
-data/logs/
-data/tasks/
-data/symphony.log
-data/_tmp_fallback.toml
-demo_task_id.txt
-# pi-agent runtime data (not source)
-pi-agent/data/logs/
-pi-agent/data/tasks/
-**/symphony.log
+# 构建产物
+dist/
+build/
+*.egg-info/
 
-# Node / pi-agent build artifacts & deps (rebuilt by install.sh)
-node_modules/
-pi-agent/**/dist/
-pi-agent/**/node_modules/
-*.tsbuildinfo
-
-# Screenshots / transcripts (local artifacts)
-shot_*.png
-tui_transcript.txt
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Coverage
-htmlcov/
-.coverage
-.coverage.*
+# 测试缓存
 .pytest_cache/
-.mypy_cache/
+
+# 前端依赖与构建产物
+web/node_modules/
+web/dist/
+
+# 系统与日志文件
+.DS_Store
+*.log
+
+# Superpowers 中间产物
+.superpowers/
+
+# Agent / IDE process artifacts
+.trae/
+.symphony/
+.phymony/
+skills_summary.md
+Symphony_Skill_*.md
+
+# 本地联调运行时目录与本地配置
+.runtime/
+config.local.yaml
