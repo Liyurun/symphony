@@ -1,0 +1,47 @@
+src/symphony/server/api/chat.py
+  s_1e8cecf186ca49::t_3bbb0afd87f8fd 1-119
+src/symphony/workflow/dag_log.py
+  s_9b50aa249a7fb0::t_2a0880dfe1d5f9 1,3-108,111-121,124-127
+tests/server/test_chat_api.py
+  s_1e8cecf186ca49::t_26e7a8cabd8315 1-13,15-16,19-94,96-157
+tests/server/test_chat_ws.py
+  s_1e8cecf186ca49::t_68e97bf1cf6f11 1-204
+tests/server/test_manager.py
+  s_1e8cecf186ca49::t_5a4c30670a2f58 1-221
+web/src/pages/SopsPage.tsx
+  s_393de03679057d::t_6bd83620bba211 1-156
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "59c4be52dadfc2b1ec0b15ae117b8b229640cd4d",
+  "prompts": {},
+  "sessions": {
+    "s_1e8cecf186ca49": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a4a24b54a81a29371f93987",
+        "model": "gpt-5.5__max"
+      },
+      "human_author": "Li Yuruan <1404020204@s.upc.edu.cn>"
+    },
+    "s_393de03679057d": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a4dc73a10228724f522ba5c",
+        "model": "gpt-5.5__max"
+      },
+      "human_author": "Li Yuruan <1404020204@s.upc.edu.cn>"
+    },
+    "s_9b50aa249a7fb0": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a4faef9ebdf2a88a898d741",
+        "model": "gpt-5.5__max"
+      },
+      "human_author": "Li Yuruan <1404020204@s.upc.edu.cn>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
